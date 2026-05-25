@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../api/supabaseClient';
+import { supabase } from '../../supabaseClient';
 import { 
   LucideCalendar, LucidePackage, 
   LucideLoader2, LucideHeart, LucideTrash2 
@@ -41,8 +41,7 @@ const HistorialCompras = ({ user }: HistorialProps) => {
           .eq('id_usuario', user.id);
         if (error) throw error;
         if (data) {
-          console.log("Datos de favoritos recuperados:", data);
-          setFavoritos(data);
+          setFavoritos(data); 
         }
       }
     } catch (error: any) {

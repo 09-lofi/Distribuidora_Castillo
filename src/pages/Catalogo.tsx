@@ -1,22 +1,23 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo} from 'react';
 import { LucideSearch } from 'lucide-react';
 import { CarritoFlotante } from '../componentes/tienda/CarritoFlotante';
 import CardProducto from '../componentes/tienda/CardProduct';
 import FacturaModal from '../componentes/tienda/FacturaModal';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../supabaseClient';
 import { toast } from 'react-hot-toast';
 import { procesarNuevoPedido } from '../services/PedidoService'; 
 
 interface Producto {
+  
   id: number;
-  nombre_producto: string;
-  categoria: string;
-  precio_unitario: number;
-  precio_mayorista: number;
+  nombre_producto: string | null;
+  categoria: string | null;
+  precio_unitario: number | null;
+  precio_mayorista: number | null;
 }
 
+
 export const Catalogo = ({ isLoggedIn, userData, setIsModalOpen }: any) => {
-  const isMounted = useRef(true);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
@@ -34,6 +35,7 @@ export const Catalogo = ({ isLoggedIn, userData, setIsModalOpen }: any) => {
     const precio = Number(item.precioFinal || 0);
     const cantidad = Number(item.cantidad || 1);
     return acc + (precio * cantidad);
+    
   }, 0);
 }, [carrito]);
 
@@ -41,45 +43,52 @@ export const Catalogo = ({ isLoggedIn, userData, setIsModalOpen }: any) => {
     return new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString();
   }, [verFactura]);
 
-useEffect(() => {
-  let activo = true;
 
-  const fetchProductos = async () => {
+useEffect(() => {
+  let isMounted = true;
+
+  const fetchData = async () => {
     try {
       setCargando(true);
-
-      const { data, error } = await supabase
-        .from('productos')
-        .select('*');
-
+      const { data, error } = await supabase.from('productos').select('*');
+      
       if (error) throw error;
-
-      if (activo) setProductos(data || []);
-
-    } catch (err) {
-      console.error("Error inesperado:", err);
-
-    } finally {
-      if (activo) setCargando(false);
+      
+      if (isMounted) {
+        setProductos(data || []);
+        setCargando(false); 
+      }
+    } catch (error) {
+      //console.error("Error al cargar:", error);
+      if (isMounted) setCargando(false);
     }
   };
 
-  fetchProductos();
-
-  return () => {
-    //activo = false;
-    isMounted.current = false;
-  };
-}, []);
+  fetchData();
+  return () => { isMounted = false; };
+}, []); // <--- El array vacío es obligatorio y crítico // <----------------------------------
 
   const productosFiltrados = useMemo(() => {
-    return productos.filter(p => {
-      let coincideCat = categoriaSel === "Todos" || 
-        (categoriaSel === "Despensa" ? ["Salsas", "Condimentos", "Despensa"].includes(p.categoria) : p.categoria === categoriaSel);
-      const coincideBusq = (p.nombre_producto || "").toLowerCase().includes(busqueda.toLowerCase());
-      return coincideCat && coincideBusq;
-    });
-  }, [productos, busqueda, categoriaSel]);
+  return productos.filter(p => {
+
+    const categoria = p.categoria || "";
+
+    const coincideCat =
+      categoriaSel === "Todos" ||
+      (
+        categoriaSel === "Despensa"
+          ? ["Salsas", "Condimentos", "Despensa"].includes(categoria)
+          : categoria === categoriaSel
+      );
+
+    const coincideBusq =
+      (p.nombre_producto || "")
+        .toLowerCase()
+        .includes(busqueda.toLowerCase());
+    return coincideCat && coincideBusq;
+  });
+
+}, [productos, busqueda, categoriaSel]);
 
   const agregarAlCarrito = (
   prod: any,
@@ -126,10 +135,7 @@ useEffect(() => {
   setIsCartOpen(true);
 };
 
-
-
 const handleConfirmarPedido = async () => {
-  //console.log("DATOS DEL PRIMER PRODUCTO:", carrito[0]);
   try {
     
     if (!userData || !userData.id) {
@@ -143,7 +149,7 @@ const handleConfirmarPedido = async () => {
       precioFinal: Number(item.precioFinal),
       tipoPrecio: item.tipoPrecio
     }));
-    console.log("ENVIANDO:", carritoParaServicio);
+    //console.log("ENVIANDO:", carritoParaServicio);
     await procesarNuevoPedido(
       carritoParaServicio,
       userData,
@@ -160,6 +166,9 @@ const handleConfirmarPedido = async () => {
     );
   }
 };
+//console.log("Estado actual - Productos:", productos);
+//console.log("Estado actual - Filtrados:", productosFiltrados);
+//console.log("¿Está cargando?:", cargando);
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-20 px-6 font-montserrat">
@@ -167,7 +176,7 @@ const handleConfirmarPedido = async () => {
         
         {/* BUSCADOR */}
         <div className="max-w-xl mx-auto mb-10 text-center">
-          <h1 className="text-4xl font-black text-castillo-oscuro uppercase mb-8">Nuestro <span className="text-castillo-naranja">Catálogo</span></h1>
+          <h1 className="text-[40px] font-black text-castillo-oscuro uppercase mb-8">Nuestro <span className="text-castillo-naranja">Catálogo</span></h1>
           <div className="relative">
             <LucideSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input  className="w-full pl-14 pr-6 py-4 rounded-full shadow-lg outline-none focus:ring-2 focus:ring-castillo-naranja transition-all"
@@ -191,34 +200,45 @@ const handleConfirmarPedido = async () => {
         </div>
 
         {/* GRID */}
-      {cargando ? (
-        <div className="text-center py-20 font-black animate-pulse text-castillo-naranja">
-          CARGANDO PRODUCTOS...
-        </div>
-      ) : productos.length === 0 ? (
-        <div className="text-center py-20 text-slate-500 font-medium">
-          No se encontraron productos en la base de datos. <br/>
-          <span className="text-sm italic">(Revisa si la tabla 'productos' tiene filas en Supabase)</span>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {productosFiltrados.map(p => (
-            <CardProducto 
-              key={p.id} 
-              producto={{...p, 
-                nombre: p.nombre_producto, 
-                precio: p.precio_unitario, 
-                precioMayorista: p.precio_mayorista, 
-                img: '/placeholder.png'
-              }} 
-              onAgregar={agregarAlCarrito} 
-              userId={userData?.id}
-            />
-          ))}
-        </div>
-      )}
+{cargando ? (
+
+  <div className="text-center py-20 font-black animate-pulse text-castillo-naranja">
+    CARGANDO PRODUCTOS...
+  </div>
+
+) : productosFiltrados.length === 0 ? (
+
+  <div className="text-center py-20 text-slate-500 font-medium">
+    No se encontraron productos.
+  </div>
+
+) : (
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+
+    {productosFiltrados.map((p) => (
+
+      <CardProducto
+        key={p.id}
+        producto={{
+          ...p,
+          nombre: p.nombre_producto,
+          precio: p.precio_unitario,
+          precioMayorista: p.precio_mayorista,
+          img: '/placeholder.png'
+        }}
+        onAgregar={agregarAlCarrito}
+        userId={userData?.id}
+      />
+
+    ))}
+
+  </div>
+
+)}
       </div>
       {/* CARRITO */}
+      
       {userData?.rol !== 'admin' && (
       <CarritoFlotante 
         items={carrito} 

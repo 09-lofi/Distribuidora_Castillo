@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export function useAppAuth() {
   const [isScrolled, setIsScrolled] = useState(false);

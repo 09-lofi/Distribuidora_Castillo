@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../api/supabaseClient";
+import { supabase } from "../../supabaseClient";
 import { toast } from "react-hot-toast";
 import {LucideUsers, LucidePhone, LucideMapPin} from "lucide-react";
 

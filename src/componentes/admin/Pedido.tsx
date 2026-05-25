@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LucideShoppingCart, LucideChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../../api/supabaseClient';
+import { supabase } from '../../supabaseClient';
 import { toast } from 'react-hot-toast';
 
 interface Pedido {

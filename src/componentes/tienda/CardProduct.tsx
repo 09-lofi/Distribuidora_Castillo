@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {LucideInfo, LucideMinus, LucidePlus, LucideShoppingCart, LucideHeart} from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase } from '../../api/supabaseClient';
+import { supabase } from '../../supabaseClient';
 import { toast } from 'react-hot-toast';
 
 interface CardProps {

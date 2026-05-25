@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../api/supabaseClient";
+import { supabase } from "../../supabaseClient";
 import { toast } from "react-hot-toast";
 
 interface Producto {
@@ -38,6 +38,7 @@ const Inventario = () => {
       setLoading(false);
     }
   };
+  
   useEffect(() => {obtenerProductos();}, []);
 
   if (loading) {

@@ -9,7 +9,7 @@ import {
   LucideTrendingUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../supabaseClient';
 import { toast } from 'react-hot-toast';
 import Pedidos from '../componentes/admin/Pedido';
 import Inventario from '../componentes/admin/Inventario';

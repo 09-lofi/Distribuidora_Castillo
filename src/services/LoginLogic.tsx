@@ -1,4 +1,4 @@
-import { supabase } from '../api/supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export const handleLogin = async (identificador: string, password: any) => {
   const input = identificador.trim();
