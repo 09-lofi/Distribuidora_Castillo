@@ -1,22 +1,8 @@
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
-import { 
-  LucideShieldCheck, 
-  LucideHandshake, 
-  LucideClock, 
-  LucideBadgeCheck, 
-  LucideEye, 
-  LucideTarget,
-  LucideCompass,
-  LucideMapPin,
-  LucideUser,
-  LucideShoppingCart,
-  LucideStore,
-  LucideChevronRight
-} from 'lucide-react';
-
-// Estilos de Swiper
+import { LucideShieldCheck,  LucideHandshake,  LucideClock,  LucideBadgeCheck,  LucideEye,  LucideTarget,
+  LucideCompass, LucideMapPin, LucideUser, LucideShoppingCart, LucideStore, LucideChevronRight} from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
