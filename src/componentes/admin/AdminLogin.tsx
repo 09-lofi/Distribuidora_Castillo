@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LucideShieldCheck, LucideMail, LucideLock, LucideBriefcase } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { LucideShieldCheck, LucideMail, LucideLock} from 'lucide-react';
 import { supabase } from '../../api/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -10,10 +10,10 @@ const AdminLogin = () => {
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       // LOGIN
       const { data, error } =
@@ -102,8 +102,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#ff6b00] hover:bg-[#06241b] text-white py-5 rounded-[1.5rem] text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-xl shadow-orange-500/20 active:scale-95 disabled:opacity-50 mt-4"
-            >
+              className="w-full bg-[#ff6b00] hover:bg-[#06241b] text-white py-5 text-sm font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-xl shadow-orange-500/20 active:scale-95 disabled:opacity-50 mt-4">
               Entrar
             </button>
           </form>

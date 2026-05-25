@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { LucideSearch } from 'lucide-react';
 import { CarritoFlotante } from '../componentes/tienda/CarritoFlotante';
 import CardProducto from '../componentes/tienda/CardProduct';
@@ -163,7 +163,7 @@ const handleConfirmarPedido = async () => {
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-20 px-6 font-montserrat">
-      <div className="max-w-[1600px] mx-auto">
+      <div className="max-w-400 mx-auto">
         
         {/* BUSCADOR */}
         <div className="max-w-xl mx-auto mb-10 text-center">

@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  LucideInfo,
-  LucideMinus,
-  LucidePlus,
-  LucideShoppingCart,
-  LucidePackageCheck,
-  LucideHeart
-} from 'lucide-react';
+import {LucideInfo, LucideMinus, LucidePlus, LucideShoppingCart, LucideHeart} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../../api/supabaseClient';
 import { toast } from 'react-hot-toast';
@@ -33,157 +26,71 @@ const CardProducto = ({producto, onAgregar, userId, esFavoritoInicial = false
       precioDetalle);
   const precioActual =
   tipoPrecio === 'Detalle'
-    ? Number(producto.precio || 0)
-    : Number(producto.precioMayorista || producto.precio || 0);
+    ? precioDetalle
+    : precioMayorista;
 
   // FAVORITOS
   const handleLike = async (
     e: React.MouseEvent
   ) => {
-
     e.stopPropagation();
-
     if (!userId) {
       toast.error(
         "Inicia sesión para favoritos"
       );
       return;
     }
-
     setCargandoLike(true);
-
     try {
-
       if (esFavorito) {
-
         const { error } = await supabase
           .from('favoritos')
           .delete()
           .eq('id_usuario', userId)
           .eq('id_producto', producto.id);
-
         if (error) throw error;
-
         setEsFavorito(false);
-
       } else {
-
         const { error } = await supabase
           .from('favoritos')
           .insert({
             id_usuario: userId,
             id_producto: producto.id
           });
-
         if (error) throw error;
-
         setEsFavorito(true);
-
         toast.success(
           "Agregado a favoritos"
         );
       }
-
     } catch (error) {
-
       console.error(error);
-
       toast.error(
         "Error en favoritos"
       );
-
     } finally {
-
       setCargandoLike(false);
-
     }
   };
 
-  // =====================================
   // COMPONENTE
-  // =====================================
-
   return (
-
     <div
-      className="
-        perspective-1000
-        h-[480px]
-        w-full
-        group
-      "
-    >
-
-      <motion.div
-        animate={{
-          rotateY: isFlipped ? 180 : 0
-        }}
-
-        transition={{
-          duration: 0.6
-        }}
-
-        style={{
-          transformStyle: 'preserve-3d'
-        }}
-
-        className="
-          relative
-          w-full
-          h-full
-        "
-      >
-
-        {/* FRONT */}
-
-        <div
-          className="
-            absolute
-            inset-0
-            bg-white
-            rounded-[40px]
-            p-6
-            shadow-xl
-            border
-            border-slate-100
-            flex
-            flex-col
-          "
-        >
-
+      className=" perspective-1000 h-120 w-full group">
+      <motion.div animate={{
+          rotateY: isFlipped ? 180 : 0}}
+        transition={{duration: 0.6}}
+        style={{transformStyle: 'preserve-3d'}}
+        className="relative w-full h-full">
+        <div className="absolute inset-0 bg-white rounded-[40px] p-6 shadow-xl border border-slate-100 flex flex-col">
           {/* IMAGE */}
-
-          <div
-            className="
-              relative
-              h-48
-              mb-4
-              rounded-3xl
-              overflow-hidden
-              bg-slate-50
-              flex
-              items-center
-              justify-center
-            "
-          >
-
+          <div className="relative h-48 mb-4 rounded-3xl overflow-hidden bg-slate-50 flex items-center justify-center">
             <img
               src={producto.img || '/placeholder.png'}
               alt={producto.nombre}
-              className="w-40 h-40 object-contain group-hover:scale-110 transition-transform duration-500"
-            />
-
+              className="w-40 h-40 object-contain group-hover:scale-110 transition-transform duration-500"/>
             {/* BOTONES */}
-
-            <div
-              className="
-                absolute
-                top-4
-                right-4
-                flex
-                flex-col
-                gap-2
-              ">
+            <div className="absolute top-4 right-4 flex flex-col gap-2">
               <button
                 onClick={handleLike}
                 disabled={cargandoLike}

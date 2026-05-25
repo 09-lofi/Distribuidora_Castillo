@@ -1,4 +1,3 @@
-import React from 'react';
 import { LucidePhone, LucideMail } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';

@@ -3,7 +3,7 @@ import { supabase } from '../../api/supabaseClient';
 import { toast } from 'react-hot-toast';
 import { 
   LucideUser, LucidePhone, LucideMapPin, LucideSave, 
-  LucideLoader2, LucideMail, LucideAlertCircle 
+  LucideLoader2, LucideMail
 } from 'lucide-react';
 
 interface PerfilProps {
@@ -15,12 +15,7 @@ interface PerfilProps {
 const PerfilUsuario = ({ user, onClose }: PerfilProps) => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [form, setForm] = useState({
-      nombre: '',
-      telefono: '',
-  ubicacion: '',
-  email: ''
-  });
+  const [form, setForm] = useState({nombre: '', telefono: '', ubicacion: '', email: ''});
 
   useEffect(() => {const cargarInformacionCompleta = async () => {
     try {
@@ -43,10 +38,7 @@ const PerfilUsuario = ({ user, onClose }: PerfilProps) => {
         error: errorCliente
     } = await supabase
         .from('clientes_info')
-        .select(`
-        nombre_completo,
-        telefono,
-        ubicacion`)
+        .select(`nombre_completo, telefono, ubicacion`)
         .eq('id_usuario', userId)
         .single();
     if (errorCliente) {
@@ -104,7 +96,7 @@ cargarInformacionCompleta();
 
     return (
     <div className="max-w-md mx-auto">
-      <div className="bg-white rounded-[32px] p-8 shadow-2xl border border-slate-100">
+      <div className="bg-white rounded-4xl p-8 shadow-2xl border border-slate-100">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-castillo-naranja/10 text-castillo-naranja rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-castillo-naranja/5">
             <LucideUser size={40} />
@@ -156,7 +148,7 @@ cargarInformacionCompleta();
           <button 
             type="submit" 
             disabled={loading} 
-            className="w-full bg-castillo-oscuro hover:bg-castillo-naranja text-white font-black py-5 rounded-[24px] transition-all flex items-center justify-center gap-3 uppercase text-xs shadow-lg active:scale-95">
+            className="w-full bg-castillo-oscuro hover:bg-castillo-naranja text-white font-black py-5 rounded-3xl transition-all flex items-center justify-center gap-3 uppercase text-xs shadow-lg active:scale-95">
             {loading ? (
               <LucideLoader2 className="animate-spin" size={18} />
             ) : (<><LucideSave size={18} /> Guardar Cambios</>)}

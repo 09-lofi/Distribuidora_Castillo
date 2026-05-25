@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
@@ -13,7 +12,6 @@ import {
   LucideMapPin,
   LucideUser,
   LucideShoppingCart,
-  LucideTruck,
   LucideStore,
   LucideChevronRight
 } from 'lucide-react';
@@ -104,7 +102,7 @@ export const Inicio = () => {
       </section>
 
       {/* 3. VALORES */}
-      <section className="py-24 px-6 max-w-[1600px] mx-auto w-full">
+      <section className="py-24 px-6 max-w-400 mx-auto w-full">
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-black text-castillo-oscuro uppercase tracking-tight">
             Nuestros <span className="text-castillo-naranja">Valores</span>
@@ -216,7 +214,7 @@ export const Inicio = () => {
               </div>
             </div>
           </div>
-          <div className="rounded-3xl overflow-hidden shadow-2xl h-[450px] border-4 border-white bg-slate-200">
+          <div className="rounded-3xl overflow-hidden shadow-2xl h-112.5 border-4 border-white bg-slate-200">
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15601.76118338905!2d-86.2570!3d12.1475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f71560000000000%3A0x0!2zMTLCsDA4JzUxLjAiTiA4NsKwMTUnMjUuMiJX!5e0!3m2!1ses!2sni!4v1712900000000!5m2!1ses!2sni" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"></iframe>
           </div>
         </div>

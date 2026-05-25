@@ -89,7 +89,7 @@ export const CarritoFlotante: React.FC<CarritoProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-castillo-oscuro/40 backdrop-blur-sm z-[60]"/>
+                className="fixed inset-0 bg-castillo-oscuro/40 backdrop-blur-sm z-60"/>
                 {/* PANEL */}
                 <motion.div
                 initial={{ x: '100%' }}
@@ -100,7 +100,7 @@ export const CarritoFlotante: React.FC<CarritoProps> = ({
                     damping: 25,
                     stiffness: 200
                 }}
-                className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col">
+                className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-70 shadow-2xl flex flex-col">
                 {/* HEADER */}
                 <div className="p-6 border-b flex items-center justify-between bg-castillo-oscuro text-white">
                     <div className="flex items-center gap-2">

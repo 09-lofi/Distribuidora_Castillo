@@ -21,20 +21,14 @@ interface NavbarProps {
     }: NavbarProps) => {
     return (
         <nav
-        className={`
-            fixed top-0 w-full z-[100] transition-all duration-300 py-3 bg-castillo-oscuro
-            ${isScrolled ? 'shadow-xl' : ''}
-        `}
-        >
+        className={`fixed top-0 w-full z-100 transition-all duration-300 py-3 bg-castillo-oscuro ${isScrolled ? 'shadow-xl' : ''}`}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-            
             {/* LOGO */}
             <Link to="/" className="flex items-center gap-3">
             <img
                 src="/logo-dis.jpeg"
                 alt="Logo"
-                className="h-12 w-12 rounded-full border-2 border-castillo-limon"
-            />
+                className="h-12 w-12 rounded-full border-2 border-castillo-limon"/>
             <div className="flex flex-col text-white">
                 <span className="font-black text-xl tracking-tighter uppercase leading-none">
                 Castillo
@@ -50,8 +44,7 @@ interface NavbarProps {
             {!isLoggedIn || !userData ? (
                 <button
                 onClick={onOpenAuth}
-                className="bg-castillo-naranja px-6 py-2.5 rounded-full shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-                >
+                className="bg-castillo-naranja px-6 py-2.5 rounded-full shadow-lg hover:scale-105 transition-all flex items-center gap-2">
                 <LucideUser size={16} />
                 INICIAR SESIÓN
                 </button>
@@ -68,8 +61,7 @@ interface NavbarProps {
                 </div>
                 <button
                     onClick={onLogout}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase transition-all"
-                >
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase transition-all">
                     Salir
                 </button>
                 </div>

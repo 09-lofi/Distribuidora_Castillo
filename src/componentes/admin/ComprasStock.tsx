@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../api/supabaseClient";
 import { toast } from "react-hot-toast";
-import { LucidePackagePlus, LucideCheckCircle2, LucideXCircle } from "lucide-react";
+import { LucidePackagePlus} from "lucide-react";
 
 // Tipado según tu tabla de Supabase
 interface Compra {
@@ -28,11 +28,10 @@ const ComprasStock = () => {
     precio_unitario: 0
   });
 
-  const [loading, setLoading] = useState(true);
+  //const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    setLoading(true);
-    // Promise.all para cargar todo de golpe y evitar bloqueos de red
+    //setLoading(true);
     const [prodRes, compRes] = await Promise.all([
       supabase.from("productos").select("id, nombre_producto"),
       supabase.from("compras_stock").select("*, productos(nombre_producto)").order("created_at", { ascending: false })
@@ -40,7 +39,7 @@ const ComprasStock = () => {
 
     if (prodRes.data) setProductos(prodRes.data);
     if (compRes.data) setCompras(compRes.data as any);
-    setLoading(false);
+    //setLoading(false);
   };
 
   useEffect(() => { fetchData(); }, []);
@@ -52,9 +51,7 @@ const ComprasStock = () => {
       return toast.error("Completa todos los campos correctamente");
     }
 
-    const montoTotal =
-  Number(cantidad) *
-  Number(precio_unitario);
+    const montoTotal = Number(cantidad) * Number(precio_unitario);
 
 const { error } = await supabase
   .from("compras_stock")
@@ -64,6 +61,7 @@ const { error } = await supabase
       nombre_proveedor,
       cantidad: Number(cantidad),
       precio_unitario: Number(precio_unitario),
+      monto_total: montoTotal,
       estado: "pendiente"
     }
   ]);
@@ -86,7 +84,7 @@ const { error } = await supabase
       </header>
 
       {/* FORMULARIO */}
-      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+      <div className="bg-white p-8 rounded-4xl shadow-sm border border-slate-100">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <select 
             className="p-4 rounded-2xl bg-slate-50"
@@ -108,7 +106,7 @@ const { error } = await supabase
       </div>
 
       {/* TABLA */}
-      <div className="bg-white rounded-[2rem] shadow-sm overflow-hidden">
+      <div className="bg-white rounded-4xl shadow-sm overflow-hidden">
         <table className="w-full text-left">
           <thead className="bg-slate-50 text-slate-400 text-xs uppercase">
             <tr>

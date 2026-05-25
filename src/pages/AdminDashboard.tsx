@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   LucideLayoutDashboard,
   LucidePackage,
@@ -190,7 +190,7 @@ const AdminDashboard = () => {
 // --- COMPONENTES AUXILIARES ---
 
 const StatCard = ({ title, value, icon, color }: any) => (
-  <div className="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 hover:translate-y-[-4px] transition-all duration-300">
+  <div className="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 hover:translate-y-1 transition-all duration-300">
     <div className={`p-4 rounded-2xl ${color} shadow-inner`}>{icon}</div>
     <div>
       <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</p>

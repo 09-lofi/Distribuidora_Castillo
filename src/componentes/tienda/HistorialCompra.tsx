@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../api/supabaseClient';
 import { 
-  LucideFileText, LucideCalendar, LucidePackage, 
+  LucideCalendar, LucidePackage, 
   LucideLoader2, LucideHeart, LucideTrash2 
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -71,7 +71,7 @@ const HistorialCompras = ({ user }: HistorialProps) => {
   };
 
   return (
-    <div className="bg-white rounded-[40px] p-8 shadow-2xl border border-slate-100 w-full max-w-4xl mx-auto min-h-[400px]">
+    <div className="bg-white rounded-[40px] p-8 shadow-2xl border border-slate-100 w-full max-w-4xl mx-auto min-h-100">
       {/* NAVEGACIÓN INTERNA (TABS) */}
       <div className="flex gap-6 mb-8 border-b border-slate-50">
         <button 
@@ -152,7 +152,7 @@ const HistorialCompras = ({ user }: HistorialProps) => {
             </div>
           ) : (
             favoritos.map((fav) => (
-              <div key={fav.id_producto} className="flex items-center gap-4 bg-slate-50 p-4 rounded-[24px] border border-transparent hover:border-castillo-naranja/20 transition-all group">
+              <div key={fav.id_producto} className="flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-transparent hover:border-castillo-naranja/20 transition-all group">
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-2 shadow-sm">
                   <img 
                     src={`/productos/${fav.id_producto}.png`} 

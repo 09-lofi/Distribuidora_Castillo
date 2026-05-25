@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { LucideShoppingCart, LucideChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../api/supabaseClient';
@@ -33,7 +33,10 @@ const Pedidos = () => {
     } finally {
       setLoading(false);
     }
+    obtenerPedidos()
   };
+
+  
 
   const actualizarEstado = async (
   id: number,
@@ -62,22 +65,13 @@ const Pedidos = () => {
           : p
       )
     );
-
     toast.success(
       `Pedido #${id} actualizado`
     );
-
   } catch (error: any) {
-
-    console.error(error);
-
-    toast.error(
-      error.message ||
-      'Error al actualizar'
-    );
-
+    //console.error(error);
+    toast.error( error.message || 'Error al actualizar');
   }
-
 };
 
   const obtenerColorEstado = (estado: string) => {

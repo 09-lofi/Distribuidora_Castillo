@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LucideX, LucideCheckCircle, LucideReceipt, LucideUser, LucideCalendar } from 'lucide-react';
 
@@ -26,7 +25,7 @@ export const FacturaModal = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-castillo-oscuro/60 backdrop-blur-sm">
+      <div className="fixed inset-0 z-2000 flex items-center justify-center p-4 bg-castillo-oscuro/60 backdrop-blur-sm">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

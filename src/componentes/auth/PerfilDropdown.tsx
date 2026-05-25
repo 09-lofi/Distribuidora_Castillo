@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   LucideUser,
   LucideHistory,
@@ -36,27 +36,23 @@ export const PerfilDropdown = ({ userData, onLogout }: PerfilDropdownProps) => {
             {/* BOTON */}
             <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-3 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all group"
-            >
+            className="flex items-center gap-3 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 transition-all group">
             <div className="w-8 h-8 bg-castillo-naranja rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
                 <LucideUser size={16} />
             </div>
-
             <div className="text-left hidden sm:block">
                 <p className="text-[9px] leading-none text-castillo-limon font-black uppercase tracking-wider">
                 {segmentoUsuario}
                 </p>
-                <p className="text-[11px] font-bold text-white truncate max-w-[100px] uppercase">
+                <p className="text-[11px] font-bold text-white truncate max-w-25 uppercase">
                 {primerNombre}
                 </p>
             </div>
-
             <LucideChevronDown
                 size={14}
                 className={`text-white/50 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
             />
             </button>
-
             {/* DROPDOWN */}
             <AnimatePresence>
             {isOpen && (
@@ -66,8 +62,7 @@ export const PerfilDropdown = ({ userData, onLogout }: PerfilDropdownProps) => {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-4 w-64 bg-white rounded-[30px] shadow-2xl border border-slate-100 overflow-hidden z-20"
-                >
+                    className="absolute right-0 mt-4 w-64 bg-white rounded-[30px] shadow-2xl border border-slate-100 overflow-hidden z-20">
                     <div className="p-3">
                     <div className="px-4 py-3 border-b border-slate-50 mb-2">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -77,32 +72,26 @@ export const PerfilDropdown = ({ userData, onLogout }: PerfilDropdownProps) => {
                         {emailUsuario}
                         </p>
                     </div>
-
                     {/* Opciones */}
                     <button
                         onClick={() => { setShowProfile(true); setIsOpen(false); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 rounded-2xl text-[10px] font-black uppercase text-slate-600 transition-all group"
-                    >
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 rounded-2xl text-[10px] font-black uppercase text-slate-600 transition-all group">
                         <div className="p-2 bg-blue-100 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
                         <LucideSettings size={16} />
                         </div>
                         Mi Perfil
                     </button>
-
                     <button
                         onClick={() => { setShowHistory(true); setIsOpen(false); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 rounded-2xl text-[10px] font-black uppercase text-slate-600 transition-all group mt-1"
-                    >
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 rounded-2xl text-[10px] font-black uppercase text-slate-600 transition-all group mt-1">
                         <div className="p-2 bg-castillo-naranja/10 rounded-lg group-hover:bg-castillo-naranja group-hover:text-white transition-colors">
                         <LucideHistory size={16} />
                         </div>
                         Mis Facturas
                     </button>
-
                     <button
                         onClick={async () => { setIsOpen(false); await onLogout(); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-2xl text-[10px] font-black uppercase text-red-500 transition-all group mt-1"
-                    >
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-2xl text-[10px] font-black uppercase text-red-500 transition-all group mt-1">
                         <div className="p-2 bg-red-100 rounded-lg group-hover:bg-red-500 group-hover:text-white transition-colors">
                         <LucideLogOut size={16} />
                         </div>
@@ -114,11 +103,10 @@ export const PerfilDropdown = ({ userData, onLogout }: PerfilDropdownProps) => {
             )}
             </AnimatePresence>
         </div>
-
         {/* MODALES: PERFIL Y FACTURAS */}
         <AnimatePresence>
             {showProfile && (
-            <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-600 flex items-center justify-center p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowProfile(false)} className="absolute inset-0 bg-castillo-oscuro/80 backdrop-blur-md" />
                 
                 <motion.div initial={{ scale: 0.9, y: 50 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 50 }} className="relative w-full max-w-lg z-10">
@@ -130,10 +118,9 @@ export const PerfilDropdown = ({ userData, onLogout }: PerfilDropdownProps) => {
             </div>
             )}
         </AnimatePresence>
-
         <AnimatePresence>
             {showHistory && (
-            <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-600 flex items-center justify-center p-4">
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowHistory(false)} className="absolute inset-0 bg-castillo-oscuro/80 backdrop-blur-md" />
                 
                 <motion.div initial={{ scale: 0.9, y: 50 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 50 }} className="relative bg-white w-full max-w-4xl h-[85vh] rounded-[50px] shadow-2xl overflow-hidden flex flex-col">

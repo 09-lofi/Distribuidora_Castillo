@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Routes,
   Route,
@@ -37,10 +36,7 @@ function App() {
     handleLogout,
     refreshUserData
   } = useAppAuth();
-  // =========================================
   // RENDER
-  // =========================================
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-montserrat">
       {/* TOASTER */}
@@ -70,7 +66,7 @@ function App() {
         handleAuth={handleAuth}
       />
       {/* MAIN */}
-      <main className="flex-grow pt-24">
+      <main className="grow pt-24">
         <Routes>
           {/* PUBLIC */}
           <Route
