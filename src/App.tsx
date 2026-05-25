@@ -14,6 +14,12 @@ import AdminLogin from './componentes/admin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Pedidos from './componentes/admin/Pedido';
 import Inventario from './componentes/admin/Inventario';
+import ReactGA from "react-ga4";
+
+
+
+ReactGA.initialize("G-LZ2W5FV8P8");
+ReactGA.send({ hitType: "pageview", page: window.location.pathname });
 
 function App() {
   const location = useLocation();
