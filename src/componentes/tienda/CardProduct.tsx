@@ -62,10 +62,6 @@ const CardProducto = ({ producto, onAgregar, userId, esFavoritoInicial = false }
 
 
 const claveMapeada = mapNombreToKey[producto.nombre || ''] || '';
-console.log('Claves de productImges:', Object.keys(productImges));
-console.log('Buscando ArrozFaizan:', productImges['ArrozFaizan']);
-console.log('Buscando galletas:', productImges['galletas']);
-
 const imagenSrc = claveMapeada ? productImges[claveMapeada] || '/placeholder.png' : '/placeholder.png';
 
   // CARGAR FAVORITOS CUANDO HAY USER ID
