@@ -1,24 +1,68 @@
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
-import { LucideShieldCheck,  LucideHandshake,  LucideClock,  LucideBadgeCheck,  LucideEye,  LucideTarget,
-  LucideCompass, LucideMapPin, LucideUser, LucideShoppingCart, LucideStore, LucideChevronRight} from 'lucide-react';
+import { LucideClock,LucideMapPin, LucideUser, LucideShoppingCart, LucideStore, LucideChevronRight} from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import { useState } from 'react';
 
 export const Inicio = () => {
+  const [showModal, setShowModal] = useState(false);
+
   // ARRAY CON PRODUCTOS REALES E IMÁGENES DINÁMICAS
   const destacados = [
     { nombre: "Arroz Faisan 80/20", img: "/Arroz.jpg" },
     { nombre: "Frijol Rojo Nacional", img: "/Frijoles.png" },
     { nombre: "Aceite Ideal Galón", img: "/aceite.jpg" },
-    { nombre: "Azúcar Sulfitada", img: "/Azucar.png" },
-    { nombre: "Café Presto 80 unidades", img: "/Cafe.png" },
+    { nombre: "Atún de agua", img: "/atun.png" },
+    { nombre: "Café Presto 40 unidades", img: "/presto.png" },
   ];
+
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const handleRedirect = () => {
+    setShowModal(false);
+    window.location.href = '/catalogo';
+  };
 
   return (
     <div className="flex flex-col w-full bg-slate-50 font-montserrat overflow-x-hidden">
       
+      {/* MODAL */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl p-10 max-w-lg mx-4 shadow-2xl border-b-8 border-castillo-naranja text-center"
+          >
+            <div className="w-16 h-16 bg-castillo-naranja/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <LucideShoppingCart size={36} className="text-castillo-naranja" />
+            </div>
+            <h3 className="text-2xl font-black text-castillo-oscuro uppercase mb-4">
+              ¡Bienvenido a nuestro catálogo!
+            </h3>
+            <p className="text-slate-600 font-medium mb-8 leading-relaxed">
+              Si deseas realizar una compra, debes registrarte o iniciar sesión.
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button 
+                onClick={handleCloseModal}
+                className="px-6 py-3 rounded-full font-black uppercase tracking-wider text-sm border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleRedirect}
+                className="px-6 py-3 rounded-full font-black uppercase tracking-wider text-sm bg-castillo-naranja text-white hover:bg-orange-700 transition-all shadow-lg shadow-castillo-naranja/20"
+              >
+                Ver Catálogo
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       {/* 1. HERO SECTION */}
       <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -44,84 +88,13 @@ export const Inicio = () => {
             transition={{ delay: 0.5, duration: 0.5 }}
             whileHover={{ scale: 1.05, backgroundColor: "#e65100" }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => window.location.href = '/catalogo'} 
+            onClick={handleOpenModal}
             className="bg-castillo-naranja text-white px-10 py-4 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-castillo-naranja/20 transition-all flex items-center gap-3 mx-auto group"
           >
             Ver Catálogo 
             <LucideChevronRight className="group-hover:translate-x-1 transition-transform" size={20} />
           </motion.button>
         </motion.div>
-      </section>
-
-      {/* 2. MISIÓN Y VISIÓN */}
-      <section className="py-24 px-6 bg-white shadow-inner relative z-20">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-slate-50 p-10 rounded-3xl border-l-8 border-castillo-oscuro shadow-lg"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-castillo-oscuro p-3 rounded-xl text-white"><LucideTarget size={32} /></div>
-              <h2 className="text-3xl font-black text-castillo-oscuro uppercase tracking-tighter">Nuestra Misión</h2>
-            </div>
-            <p className="text-slate-700 leading-relaxed font-medium">
-              Brindar productos básicos de buena calidad a precios accesibles, garantizando un servicio rápido y confiable.
-            </p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="bg-slate-50 p-10 rounded-3xl border-l-8 border-castillo-limon shadow-lg"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-castillo-limon p-3 rounded-xl text-castillo-oscuro"><LucideCompass size={32} /></div>
-              <h2 className="text-3xl font-black text-castillo-oscuro uppercase tracking-tighter">Nuestra Visión</h2>
-            </div>
-            <p className="text-slate-700 leading-relaxed font-medium">
-              Ser una distribuidora reconocida por su responsabilidad, eficiencia y compromiso con el pueblo nicaragüense.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 3. VALORES */}
-      <section className="py-24 px-6 max-w-400 mx-auto w-full">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-black text-castillo-oscuro uppercase tracking-tight">
-            Nuestros <span className="text-castillo-naranja">Valores</span>
-          </h2>
-          <div className="h-2 w-24 bg-castillo-limon mx-auto mt-6 rounded-full"></div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          <div className="group p-8 bg-white rounded-3xl border-b-8 border-castillo-oscuro shadow-lg hover:-translate-y-2 transition-all">
-            <div className="bg-castillo-oscuro/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"><LucideShieldCheck size={36} /></div>
-            <h3 className="font-black text-xl mb-3 text-castillo-oscuro uppercase">Confianza</h3>
-            <p className="text-slate-600 text-sm">Respaldo seguro y disponibilidad constante para nuestros clientes.</p>
-          </div>
-          <div className="group p-8 bg-white rounded-3xl border-b-8 border-castillo-naranja shadow-lg hover:-translate-y-2 transition-all">
-            <div className="bg-castillo-naranja/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"><LucideHandshake size={36} className="text-castillo-naranja" /></div>
-            <h3 className="font-black text-xl mb-3 text-castillo-oscuro uppercase">Compromiso</h3>
-            <p className="text-slate-600 text-sm">Precios honestos para cuidar la economía de tu hogar.</p>
-          </div>
-          <div className="group p-8 bg-white rounded-3xl border-b-8 border-slate-400 shadow-lg hover:-translate-y-2 transition-all">
-            <div className="bg-slate-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"><LucideClock size={36} /></div>
-            <h3 className="font-black text-xl mb-3 text-castillo-oscuro uppercase">Puntualidad</h3>
-            <p className="text-slate-600 text-sm">Valoramos tu tiempo con entregas y retiros eficientes.</p>
-          </div>
-          <div className="group p-8 bg-white rounded-3xl border-b-8 border-castillo-limon shadow-lg hover:-translate-y-2 transition-all">
-            <div className="bg-castillo-limon/20 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"><LucideBadgeCheck size={36} /></div>
-            <h3 className="font-black text-xl mb-3 text-castillo-oscuro uppercase">Calidad</h3>
-            <p className="text-slate-600 text-sm">Solo productos de marcas líderes en perfecto estado.</p>
-          </div>
-          <div className="group p-8 bg-white rounded-3xl border-b-8 border-blue-900 shadow-lg hover:-translate-y-2 transition-all">
-            <div className="bg-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6"><LucideEye size={36} className="text-blue-900" /></div>
-            <h3 className="font-black text-xl mb-3 text-castillo-oscuro uppercase">Transparencia</h3>
-            <p className="text-slate-600 text-sm">Cero costos ocultos, siempre honestidad en cada venta.</p>
-          </div>
-        </div>
       </section>
 
       {/* 4. CÓMO COMPRAR */}

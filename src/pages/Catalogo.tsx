@@ -59,14 +59,13 @@ useEffect(() => {
         setCargando(false); 
       }
     } catch (error) {
-      //console.error("Error al cargar:", error);
       if (isMounted) setCargando(false);
     }
   };
 
   fetchData();
   return () => { isMounted = false; };
-}, []); // <--- El array vacío es obligatorio y crítico // <----------------------------------
+}, []);
 
   const productosFiltrados = useMemo(() => {
   return productos.filter(p => {
@@ -128,7 +127,6 @@ useEffect(() => {
         cantidad: cant,
         precioFinal: precioCorrecto,
         tipoPrecio: tipo.toUpperCase(),
-        img: '/placeholder.png'
       }
     ];
   });
@@ -166,9 +164,7 @@ const handleConfirmarPedido = async () => {
     );
   }
 };
-//console.log("Estado actual - Productos:", productos);
-//console.log("Estado actual - Filtrados:", productosFiltrados);
-//console.log("¿Está cargando?:", cargando);
+
 
   return (
     <div className="min-h-screen bg-slate-50 pt-32 pb-20 px-6 font-montserrat">
@@ -217,7 +213,6 @@ const handleConfirmarPedido = async () => {
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
 
     {productosFiltrados.map((p) => (
-
       <CardProducto
         key={p.id}
         producto={{
@@ -225,16 +220,14 @@ const handleConfirmarPedido = async () => {
           nombre: p.nombre_producto,
           precio: p.precio_unitario,
           precioMayorista: p.precio_mayorista,
-          img: '/placeholder.png'
+          //img: '/placeholder.png'
         }}
         onAgregar={agregarAlCarrito}
         userId={userData?.id}
       />
 
     ))}
-
   </div>
-
 )}
       </div>
       {/* CARRITO */}
