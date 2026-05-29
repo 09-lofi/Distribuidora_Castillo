@@ -60,24 +60,6 @@ const Navbar = ({
               <LucideUser size={16} />
               INICIAR SESIÓN
             </button>
-          ) : userData?.rol === 'admin' ? (
-            <div className="flex items-center gap-4 bg-white/5 px-5 py-2 rounded-full border border-white/10">
-              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse" />
-              <div className="flex flex-col">
-                <span className="text-[10px] uppercase font-black text-castillo-limon tracking-widest">
-                  Administrador Activo
-                </span>
-                <span className="text-white text-xs font-bold">
-                  {userData?.nombre_completo}
-                </span>
-              </div>
-              <button
-                onClick={onLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase transition-all"
-              >
-                Salir
-              </button>
-            </div>
           ) : (
             <PerfilDropdown userData={userData} onLogout={onLogout} />
           )}

@@ -21,6 +21,28 @@ export const FacturaModal = ({
   onConfirmar 
 }: FacturaModalProps) => {
 
+  // ★ GA EVENT: purchase
+  const handleConfirmar = async () => {
+    try {
+      await onConfirmar();
+
+      window.gtag?.('event', 'purchase', {
+        transaction_id: `ORD-${Date.now()}`,
+        value: Number(total),
+        currency: 'NIO',
+        items: carrito.map(item => ({
+          item_id: item.id_producto,
+          item_name: item.nombre_producto,
+          price: Number(item.precioFinal || item.precio_unitario || 0),
+          quantity: Number(item.cantidad || 1)
+        }))
+      });
+
+    } catch (error) {
+      console.error('Error al confirmar pedido:', error);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -97,7 +119,7 @@ export const FacturaModal = ({
           </div>
           <div className="p-6 bg-slate-50 border-t border-slate-100">
             <button 
-              onClick={onConfirmar}
+              onClick={handleConfirmar}
               className="group relative w-full bg-castillo-oscuro text-white py-5 rounded-2xl font-black uppercase tracking-widest overflow-hidden hover:bg-castillo-naranja transition-colors flex items-center justify-center gap-3 shadow-xl">
               <LucideCheckCircle size={22} className="group-hover:scale-110 transition-transform" />
               Confirmar mi Pedido

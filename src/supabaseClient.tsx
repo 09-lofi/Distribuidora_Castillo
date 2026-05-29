@@ -7,7 +7,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error("Faltan las variables de entorno de Supabase");
 }
 
-// Creamos y exportamos una única instancia
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: { persistSession: false }
 });
