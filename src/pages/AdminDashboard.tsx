@@ -130,7 +130,7 @@ const AdminDashboard = () => {
                     {pedidos.map(p => (
                       <tr key={p.id} className="text-xs sm:text-sm text-slate-600 hover:bg-slate-50/40 transition-colors">
                         <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5 font-black text-[#06241b]">#{p.id}</td>
-                        <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5 font-bold truncate max-w-[120px] sm:max-w-none">{p.clientes_info?.nombre_completo || 'Venta de Mostrador'}</td>
+                        <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5 font-bold truncate max-w-30 sm:max-w-none">{p.clientes_info?.nombre_completo || 'Venta de Mostrador'}</td>
                         <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5 font-black text-[#06241b]">C$ {Number(p.total_pedido).toLocaleString()}</td>
                         <td className="px-4 sm:px-6 lg:px-8 py-3 sm:py-5 text-center">
                           <span className={`px-3 sm:px-4 py-1 rounded-full text-[8px] sm:text-[9px] font-black uppercase tracking-tighter ${
@@ -238,7 +238,7 @@ const AdminDashboard = () => {
 // --- COMPONENTES AUXILIARES ---
 
 const StatCard = ({ title, value, icon, color }: any) => (
-  <div className="bg-white p-4 sm:p-5 lg:p-7 rounded-2xl sm:rounded-[2rem] lg:rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-3 sm:gap-4 lg:gap-6 hover:translate-y-1 transition-all duration-300">
+  <div className="bg-white p-4 sm:p-5 lg:p-7 rounded-2xl sm:rounded-4xl lg:rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-3 sm:gap-4 lg:gap-6 hover:translate-y-1 transition-all duration-300">
     <div className={`p-2.5 sm:p-3 lg:p-4 rounded-xl sm:rounded-2xl ${color} shadow-inner shrink-0`}>
       {icon}
     </div>

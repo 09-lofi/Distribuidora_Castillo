@@ -19,11 +19,14 @@ const Pedidos = () => {
   const [loading, setLoading] = useState(true);
 
   const obtenerPedidos = async () => {
+    console.log("INICIO obtenerPedidos");
+
     try {
       const { data, error } = await supabase
         .from('pedidos')
         .select(`*, clientes_info!pedidos_id_cliente_fkey (nombre_completo)`)
         .order('fecha_pedido', { ascending: false });
+          console.log("RESPUESTA SUPABASE", data, error);
 
       if (error) throw error;
 
@@ -31,16 +34,22 @@ const Pedidos = () => {
         ...p,
         clientes_info: Array.isArray(p.clientes_info) ? p.clientes_info[0] : p.clientes_info
       })) || [];
+      console.log("ANTES DE setPedidos");
 
       setPedidos(formateados);
     } catch (error: any) {
       toast.error('Error al cargar la lista de pedidos');
+
+      toast.error('Error al cargar la lista de pedidos');
     } finally {
+       console.log("EJECUTANDO FINALLY");
+
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    console.log("USE EFFECT");
     obtenerPedidos();
   }, []);
 
@@ -67,7 +76,7 @@ const actualizarEstado = async (id: number, nuevoEstado: string) => {
     toast.error(error.message || 'Error al actualizar');
     // Si falla, recargar para tener datos correctos
     const { data } = await supabase.from('pedidos').select('*');
-   console.log('Pedidos desde BD:', data);
+    console.log('Pedidos desde BD:', data);
     obtenerPedidos();
   }
 };
@@ -82,6 +91,7 @@ const actualizarEstado = async (id: number, nuevoEstado: string) => {
     }
   };
 
+  console.log("Loading:", loading);
   if (loading) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-[#06241b]">

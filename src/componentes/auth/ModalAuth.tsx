@@ -60,6 +60,12 @@ const ModalAuth = ({
                       />
                   </div>
                   <div className="relative group">
+                  <LucideMail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18}/>
+                  <input type="email" name="email" placeholder="Correo Electrónico" value={formData.email} onChange={handleInputChange}
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 focus:ring-castillo-naranja text-sm"
+                  />
+                </div>
+                  <div className="relative group">
                     <LucideSmartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input 
                       type="text" name="telefono" placeholder="Número de Teléfono" required

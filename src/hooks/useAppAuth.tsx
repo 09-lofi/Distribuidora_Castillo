@@ -9,6 +9,7 @@ export function useAppAuth() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [esRegistro, setEsRegistro] = useState(false);
   const [userData, setUserData] = useState<any>(null);
+
   const [formData, setFormData] = useState({
     email: '',
     nombre: '',
@@ -117,18 +118,29 @@ export function useAppAuth() {
       if (esRegistro) {
         const telLimpio =
           formData.telefono.replace(/\D/g, '');
+
         if (telLimpio.length !== 8) {
           return toast.error(
             'El teléfono debe tener 8 números'
           );
         }
-        const correoGenerado =
-          `${telLimpio}@gmail.com`;
+
+        const nombreLimpio = formData.nombre
+          .toLowerCase()
+          .replace(/\s+/g, '');
+
+          console.log("EMAIL ESCRITO:", formData.email);
+        const correoFinal =
+          formData.email?.trim()
+            ? formData.email.trim()
+            : `${nombreLimpio}@gmail.com`;
+
+            console.log("CORREO FINAL:", correoFinal);
         const {
           data,
           error: authError
         } = await supabase.auth.signUp({
-          email: correoGenerado,
+          email: correoFinal,
           password: formData.password,
           options: {
             data: {
@@ -141,26 +153,36 @@ export function useAppAuth() {
             }
           }
         });
+
         if (authError) {
           throw authError;
         }
+
         if (!data.user) {
           toast.error(
             'No se pudo crear el usuario'
           );
           return;
         }
+
         const { error: loginError } =
           await supabase.auth.signInWithPassword({
-            email: correoGenerado,
+            email: correoFinal,
             password: formData.password
           });
+
         if (loginError) {
           throw loginError;
         }
-        toast.success('¡Registrado con éxito!');
+
+        toast.success(
+          '¡Registrado con éxito!'
+        );
+
         setIsModalOpen(false);
+
         navigate('/catalogo');
+
         setFormData({
           email: '',
           nombre: '',
@@ -169,20 +191,15 @@ export function useAppAuth() {
           segmento: '',
           password: ''
         });
+
         return;
       }
       // LOGIN
-      const userIdentifier =
-        formData.email.trim();
-      const correoFinal =
-        userIdentifier.includes('@')
-          ? userIdentifier
-          : `${userIdentifier.replace(/\s+/g, '')}@gmail.com`;
       const { error } =
-        await supabase.auth.signInWithPassword({
-          email: correoFinal,
-          password: formData.password
-        });
+      await supabase.auth.signInWithPassword({
+        email: formData.email.trim(),
+        password: formData.password
+      });
       if (error) {
         throw error;
       }
