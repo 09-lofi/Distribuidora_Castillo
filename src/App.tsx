@@ -13,11 +13,8 @@ import { Catalogo } from './pages/Catalogo';
 import AdminLogin from './componentes/admin/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import Pedidos from './componentes/admin/Pedido';
-import Inventario from './componentes/admin/Inventario';
-
-
+import Inventario from './componentes/admin/Inventario'; 
 import ReactGA from "react-ga4";
-
 
 
 ReactGA.initialize("G-LZ2W5FV8P8");

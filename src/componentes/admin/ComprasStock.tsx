@@ -13,7 +13,16 @@ interface Compra {
   monto_total: number;
   estado: string;
   created_at: string;
-  productos?: { nombre_producto: string };
+  probado_por?: string;
+  fecha_aprobacion?: string;
+
+  productos?: {
+    nombre_producto: string;
+  };
+
+  usuarios?: {
+    nombre: string;
+  };
 }
 
 const ComprasStock = () => {
@@ -21,7 +30,6 @@ const ComprasStock = () => {
   const [productos, setProductos] = useState<any[]>([]);
   const [mostrarModal, setMostrarModal] = useState(false);
   
-  // Estados del formulario
   const [formData, setFormData] = useState({
     producto_id: "",
     numero_factura: "",
@@ -30,7 +38,6 @@ const ComprasStock = () => {
     precio_unitario: 0
   });
 
-  //const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
   try {
@@ -41,9 +48,11 @@ const ComprasStock = () => {
 
       supabase
         .from("compras_stock")
-        .select(`*,
-          productos (nombre_producto)`
-        )
+        .select(`
+          *,
+          productos(nombre_producto),
+          usuarios(nombre)
+        `)
         .order("created_at", {
           ascending: false
         })
@@ -172,7 +181,7 @@ const aprobarCompra = async (compra: Compra) => {
     const { data: producto, error: productoError } =
       await supabase
         .from("productos")
-        .select("stock")
+        .select("stock_actual")
         .eq("id", compra.producto_id)
         .single();
 
@@ -180,13 +189,13 @@ const aprobarCompra = async (compra: Compra) => {
 
     // Sumar stock
     const nuevoStock =
-      Number(producto.stock) + Number(compra.cantidad);
+      Number(producto.stock_actual) + Number(compra.cantidad);
 
     const { error: stockError } =
       await supabase
         .from("productos")
         .update({
-          stock: nuevoStock
+          stock_actual: nuevoStock
         })
         .eq("id", compra.producto_id);
 
@@ -204,7 +213,6 @@ const aprobarCompra = async (compra: Compra) => {
   }
 };
 
-  // UI simplificada y alineada al estilo Castillo
   return (
     <div className="space-y-8 max-w-6xl mx-auto p-6">
       <header>
@@ -357,42 +365,30 @@ const aprobarCompra = async (compra: Compra) => {
               <th className="p-6">Cantidad</th>
               <th className="p-6">Total</th>
               <th className="p-6">Estado</th>
+              <th className="p-6">Aprobó</th>
+              <th className="p-6">Fecha</th>
               <th className="p-6">Acción</th>
             </tr>
           </thead>
 
           <tbody>
             {compras.map((c) => (
-              <tr
-                key={c.id}
-                className="border-t border-slate-100"
-              >
-                <td className="p-6 font-semibold">
-                  {c.productos?.nombre_producto}
-                </td>
-
+              <tr key={c.id} className="border-t border-slate-100">
+                <td className="p-6 font-semibold">{c.productos?.nombre_producto}</td>
+                <td className="p-6">{c.nombre_proveedor}</td>
+                <td className="p-6">{(c as any).numero_factura || "-"}</td>
+                <td className="p-6">{c.cantidad}</td>
+                <td className="p-6"> C$ {Number(c.monto_total).toLocaleString()}</td>
                 <td className="p-6">
-                  {c.nombre_proveedor}
+                  <span className="font-bold uppercase text-xs">{c.estado}</span>
                 </td>
-
+                <td className="p-6">{c.usuarios?.nombre || "-"}</td>
                 <td className="p-6">
-                  {(c as any).numero_factura || "-"}
+                  {c.fecha_aprobacion
+                    ? new Date(c.fecha_aprobacion
+                      ).toLocaleDateString("es-NI")
+                    : "-"}
                 </td>
-
-                <td className="p-6">
-                  {c.cantidad}
-                </td>
-
-                <td className="p-6">
-                  C$ {Number(c.monto_total).toLocaleString()}
-                </td>
-
-                <td className="p-6">
-                  <span className="font-bold uppercase text-xs">
-                    {c.estado}
-                  </span>
-                </td>
-
                 <td className="p-6">
                   {c.estado === "pendiente" ? (
                     <button
