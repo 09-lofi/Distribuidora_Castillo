@@ -13,15 +13,15 @@ interface Compra {
   monto_total: number;
   estado: string;
   created_at: string;
-  probado_por?: string;
+  aprobado_por?: string;
   fecha_aprobacion?: string;
 
-  productos?: {
-    nombre_producto: string;
-  };
-
+  productos?: { nombre_producto: string };
   usuarios?: {
-    nombre: string;
+    id: string;
+    admin_info?: {
+      nombre_empleado: string;
+    };
   };
 }
 
@@ -42,48 +42,50 @@ const ComprasStock = () => {
   const fetchData = async () => {
   try {
     const [prodRes, compRes] = await Promise.all([
+      supabase.from("productos").select("id, nombre_producto"),
       supabase
-        .from("productos")
-        .select("id, nombre_producto"),
-
-      supabase
-        .from("compras_stock")
-        .select(`
-          *,
-          productos(nombre_producto),
-          usuarios(nombre)
-        `)
-        .order("created_at", {
-          ascending: false
-        })
+      .from("compras_stock")
+      .select(`
+        *,
+        productos(nombre_producto),
+        usuarios!aprobado_por(
+          id,
+          admin_info!id_usuario(nombre_empleado)
+        )
+      `)
+      .order("created_at", { ascending: false })
     ]);
 
-    if (prodRes.error) {
-      console.error(prodRes.error);
-    }
-    
+    if (prodRes.error) throw prodRes.error;
+    if (compRes.error) throw compRes.error;
 
-    if (compRes.error) {
-      console.error(compRes.error);
-    }
-
-    if (prodRes.data) {
-      setProductos(prodRes.data);
-    }
-
-    if (compRes.data) {
-      setCompras(compRes.data as any);
-    }
-
+    setProductos(prodRes.data);
+    setCompras(compRes.data as Compra[]);
   } catch (error) {
     console.error(error);
-    toast.error(
-      "Error cargando datos"
-    );
+    toast.error("Error cargando datos");
   }
-};
+  };
 
   useEffect(() => { fetchData(); }, []);
+
+  const generarNumeroFactura = () => {
+    const fecha = new Date();
+
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+
+    const random = Math.floor(
+      1000 + Math.random() * 9000
+    );
+
+    return `COMP-${año}${mes}${dia}-${random}`;
+  };
+
+  const [numeroFacturaPreview] = useState(
+    generarNumeroFactura()
+  );
 
   const registrarCompra = async () => {
   const {
@@ -105,20 +107,15 @@ const ComprasStock = () => {
   }
 
   try {
-    console.log("FORM DATA:", {
-      producto_id,
-      nombre_proveedor,
-      cantidad,
-      precio_unitario
-    });
+    const numeroFactura = generarNumeroFactura();
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("compras_stock")
       .insert([
         {
           producto_id: Number(producto_id),
           nombre_proveedor,
-          numero_factura: formData.numero_factura,
+          numero_factura: numeroFactura,
           cantidad: Number(cantidad),
           precio_unitario: Number(precio_unitario),
           estado: "pendiente"
@@ -126,14 +123,11 @@ const ComprasStock = () => {
       ])
       .select();
 
-    console.log("RESPUESTA INSERT:", data);
+    if (error) throw error;
 
-    if (error) {
-      console.error("ERROR SUPABASE:", error);
-      throw error;
-    }
-
-    toast.success("Compra registrada");
+    toast.success(
+      `Compra registrada (${numeroFactura})`
+    );
     setMostrarModal(false);
 
     setFormData({
@@ -147,71 +141,42 @@ const ComprasStock = () => {
     await fetchData();
 
   } catch (error: any) {
-    console.error(error);
     toast.error(
       error.message || "Error al registrar compra"
     );
   }
 };
 
-const aprobarCompra = async (compra: Compra) => {
-  try {
-    // Obtener usuario actual
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
+  const aprobarCompra = async (compra: Compra) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return toast.error("Sesión no válida");
 
-    if (!user) {
-      return toast.error("Sesión no válida");
-    }
-
-    // Actualizar compra
-    const { error: compraError } = await supabase
-      .from("compras_stock")
-      .update({
-        estado: "aprobada",
-        aprobado_por: user.id,
-        fecha_aprobacion: new Date().toISOString()
-      })
-      .eq("id", compra.id);
-
-    if (compraError) throw compraError;
-
-    // Obtener stock actual
-    const { data: producto, error: productoError } =
-      await supabase
-        .from("productos")
-        .select("stock_actual")
-        .eq("id", compra.producto_id)
-        .single();
-
-    if (productoError) throw productoError;
-
-    // Sumar stock
-    const nuevoStock =
-      Number(producto.stock_actual) + Number(compra.cantidad);
-
-    const { error: stockError } =
-      await supabase
-        .from("productos")
+      // 1. Actualizar compra
+      const { error: compraError } = await supabase
+        .from("compras_stock")
         .update({
-          stock_actual: nuevoStock
+          estado: "aprobada",
+          aprobado_por: user.id,
+          fecha_aprobacion: new Date().toISOString()
         })
-        .eq("id", compra.producto_id);
+        .eq("id", compra.id);
+      if (compraError) throw compraError;
 
-    if (stockError) throw stockError;
+      // 2. Incrementar stock usando RPC
+      const { error: rpcError } = await supabase.rpc("incrementarstock", {
+        pproductoid: compra.producto_id,
+        pcantidad: Number(compra.cantidad)
+      });
+      if (rpcError) throw rpcError;
 
-    toast.success("Compra aprobada");
-
-    fetchData();
-
-  } catch (error: any) {
-    console.error(error);
-    toast.error(
-      error.message || "Error al aprobar compra"
-    );
-  }
-};
+      toast.success("Compra aprobada y stock actualizado");
+      fetchData();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Error al aprobar compra");
+    }
+  };
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto p-6">
@@ -231,129 +196,65 @@ const aprobarCompra = async (compra: Compra) => {
       </div>
 
       {mostrarModal && (
-            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white w-full max-w-2xl rounded-4xl p-8 shadow-2xl">
-
             <h3 className="text-3xl font-black text-[#06241b] mb-6">
               Registrar Compra
             </h3>
-
-            <input
-              type="text"
-              placeholder="Número de factura"
-              className="p-4 rounded-2xl bg-slate-50"
-              value={formData.numero_factura}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  numero_factura: e.target.value
-                })
-              }/>
+            {/* FACTURA */}
+            <div className="mb-4">
+              <label className="block text-sm font-bold text-slate-500 mb-2">
+                Número de Factura
+              </label>
+              <input type="text" value={numeroFacturaPreview} disabled
+                className="w-full p-4 rounded-2xl bg-slate-100 text-slate-500 font-bold cursor-not-allowed"/>
+            </div>
+            {/* CAMPOS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <select
-                className="p-4 rounded-2xl bg-slate-50"
-                value={formData.producto_id}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    producto_id: e.target.value
-                  })
-                }
-              >
+              <select className="p-4 rounded-2xl bg-slate-50" value={formData.producto_id}
+                onChange={(e) => setFormData({...formData, producto_id: e.target.value})}>
                 <option value="">
                   Selecciona producto
                 </option>
-
                 {productos.map((p) => (
-                  <option
-                    key={p.id}
-                    value={p.id}
-                  >
+                  <option key={p.id} value={p.id}>
                     {p.nombre_producto}
                   </option>
                 ))}
               </select>
-
-              <input
-                type="text"
-                placeholder="Proveedor"
-                className="p-4 rounded-2xl bg-slate-50"
+              <input type="text" placeholder="Proveedor" className="p-4 rounded-2xl bg-slate-50"
                 value={formData.nombre_proveedor}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    nombre_proveedor: e.target.value
-                  })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="Cantidad"
-                className="p-4 rounded-2xl bg-slate-50"
-                value={formData.cantidad}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    cantidad: Number(e.target.value)
-                  })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="Precio Unitario"
-                className="p-4 rounded-2xl bg-slate-50"
-                value={formData.precio_unitario}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    precio_unitario: Number(e.target.value)
-                  })
-                }
-              />
-
+                onChange={(e) => setFormData({...formData, nombre_proveedor: e.target.value})}/>
+              <input type="number" placeholder="Cantidad" className="p-4 rounded-2xl bg-slate-50"
+                value={formData.cantidad || ""}
+                onChange={(e) => setFormData({...formData, cantidad: Number(e.target.value)})}/>
+              <input type="number" placeholder="Precio Unitario" className="p-4 rounded-2xl bg-slate-50"
+                value={formData.precio_unitario || ""}
+                onChange={(e) => setFormData({...formData, precio_unitario: Number(e.target.value)})}/>
             </div>
-
             {/* RESUMEN */}
-
-            <div className="mt-6 bg-slate-50 rounded-2xl p-4">
-              <p className="font-bold text-slate-500">
+            <div className="mt-6 bg-slate-50 rounded-2xl p-6">
+              <p className="font-bold text-slate-500 uppercase text-xs">
                 Monto Total
               </p>
-
               <p className="text-3xl font-black text-[#06241b]">
                 C$
-                {(
-                  Number(formData.cantidad || 0) *
-                  Number(formData.precio_unitario || 0)
-                ).toLocaleString()}
+                {(Number(formData.cantidad || 0) * Number(formData.precio_unitario || 0)).toLocaleString()}
               </p>
             </div>
-
             {/* BOTONES */}
-
             <div className="flex justify-end gap-4 mt-8">
-              <button
-                onClick={() => setMostrarModal(false)}
-                className="px-6 py-3 rounded-2xl bg-slate-200 font-bold"
-              >
+              <button onClick={() => setMostrarModal(false)} className=" px-6 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 font-bold">
                 Cancelar
               </button>
-              <button
-                onClick={async () => {
-                  await registrarCompra();
-                  setMostrarModal(false);
-                }}
-                className="px-6 py-3 rounded-2xl bg-orange-500 text-white font-black"
-              >
-                Registrar
+              <button onClick={registrarCompra} className=" px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-black">
+                Registrar Compra
               </button>
             </div>
-
           </div>
         </div>
       )}
+
       {/* TABLA */} 
       <div className="bg-white rounded-4xl shadow-sm overflow-hidden">
         <table className="w-full text-left">
@@ -382,12 +283,9 @@ const aprobarCompra = async (compra: Compra) => {
                 <td className="p-6">
                   <span className="font-bold uppercase text-xs">{c.estado}</span>
                 </td>
-                <td className="p-6">{c.usuarios?.nombre || "-"}</td>
+                <td className="p-6">{c.usuarios?.admin_info?.nombre_empleado || "-"}</td>
                 <td className="p-6">
-                  {c.fecha_aprobacion
-                    ? new Date(c.fecha_aprobacion
-                      ).toLocaleDateString("es-NI")
-                    : "-"}
+                  {c.fecha_aprobacion ? new Date(c.fecha_aprobacion).toLocaleDateString("es-NI") : "-"}
                 </td>
                 <td className="p-6">
                   {c.estado === "pendiente" ? (

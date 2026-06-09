@@ -14,19 +14,23 @@ interface Pedido {
   } | null;
 }
 
+interface DetallePedido {
+  id_producto: number;
+  cantidad: number;
+}
+
+const FLUJO_ESTADOS = ['Pendiente', 'Procesando', 'Entregado'];
+
 const Pedidos = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
 
   const obtenerPedidos = async () => {
-    console.log("INICIO obtenerPedidos");
-
     try {
       const { data, error } = await supabase
         .from('pedidos')
         .select(`*, clientes_info!pedidos_id_cliente_fkey (nombre_completo)`)
         .order('fecha_pedido', { ascending: false });
-          console.log("RESPUESTA SUPABASE", data, error);
 
       if (error) throw error;
 
@@ -34,64 +38,116 @@ const Pedidos = () => {
         ...p,
         clientes_info: Array.isArray(p.clientes_info) ? p.clientes_info[0] : p.clientes_info
       })) || [];
-      console.log("ANTES DE setPedidos");
 
       setPedidos(formateados);
     } catch (error: any) {
       toast.error('Error al cargar la lista de pedidos');
-
-      toast.error('Error al cargar la lista de pedidos');
     } finally {
-       console.log("EJECUTANDO FINALLY");
-
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    console.log("USE EFFECT");
     obtenerPedidos();
   }, []);
 
-const actualizarEstado = async (id: number, nuevoEstado: string) => {
-  try {
-    console.log('Intentando actualizar pedido:', id, 'a estado:', nuevoEstado);
-    const { data, error } = await supabase
-      .from('pedidos')
-      .update({ estado: nuevoEstado })
-      .eq('id', id)
-      .select();
-    console.log('Datos actualizados:', data);
+  const actualizarEstado = async (id: number, nuevoEstado: string) => {
+    try {
+      // Verificar estado actual
+      const { data: pedidoActual, error: fetchError } = await supabase
+        .from('pedidos')
+        .select('estado, id_cliente')
+        .eq('id', id)
+        .single();
 
-    if (error) throw error;
+      if (fetchError) throw fetchError;
 
-    // Actualizar localmente SIN esperar recarga de BD
-    setPedidos((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, estado: nuevoEstado } : p
-      )
-    );
-    toast.success(`Pedido #${id} actualizado a "${nuevoEstado}"`);
-  } catch (error: any) {
-    toast.error(error.message || 'Error al actualizar');
-    // Si falla, recargar para tener datos correctos
-    const { data } = await supabase.from('pedidos').select('*');
-    console.log('Pedidos desde BD:', data);
-    obtenerPedidos();
-  }
-};
+      const estadoActual = pedidoActual?.estado;
 
-  const obtenerColorEstado = (estado: string) => {
-    switch (estado) {
-      case 'Pendiente': return 'bg-orange-100 text-[#ff6b00]';
-      case 'Procesando': return 'bg-blue-100 text-blue-700';
-      case 'Entregado': return 'bg-green-100 text-green-700';
-      case 'Cancelado': return 'bg-red-100 text-red-600';
-      default: return 'bg-slate-100 text-slate-500';
+      // Bloquear regresión de estados (excepto Cancelado que siempre es permitido)
+      if (nuevoEstado !== 'Cancelado') {
+        const indexActual = FLUJO_ESTADOS.indexOf(estadoActual);
+        const indexNuevo = FLUJO_ESTADOS.indexOf(nuevoEstado);
+
+        if (indexNuevo < indexActual) {
+          toast.error('No se puede retroceder el estado de un pedido');
+          return;
+        }
+      }
+
+      if (nuevoEstado === 'Procesando' && estadoActual === 'Pendiente') {
+        const { data: detalles, error: detError } = await supabase
+          .from('detalle_pedidos')
+          .select('id_producto, cantidad')
+          .eq('id_pedido', id); 
+
+        if (detError) throw detError;
+        if (!detalles || detalles.length === 0) {
+          throw new Error('El pedido no tiene productos asociados');
+        }
+
+        // Descontar stock de cada producto
+        for (const detalle of detalles as DetallePedido[]) {
+          const { error: rpcError } = await supabase.rpc('decrementarstock', {
+            pproductoid: detalle.id_producto, 
+            pcantidad: Number(detalle.cantidad)
+          });
+          if (rpcError) throw rpcError;
+        }
+      }
+
+      // Actualizar estado del pedido en la base de datos
+      const { error: updateError } = await supabase
+        .from('pedidos')
+        .update({ estado: nuevoEstado })
+        .eq('id', id);
+
+      if (updateError) throw updateError;
+
+      // Actualizar estado localmente
+      setPedidos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, estado: nuevoEstado } : p
+        )
+      );
+
+      // Mensaje según estado
+    const mensajes: Record<string, string> = {
+      Procesando: `Tu pedido #${id} está siendo preparado. Espera el aviso de entrega para que puedas retirar tu pedido`,
+      Entregado:  `Tu pedido #${id} ha sido entregado. ¡Gracias la comprar`,
+      Cancelado:  `Tu pedido #${id} ha sido cancelado.`
+    };
+
+    // Insertar notificación si el estado tiene mensaje
+    if (mensajes[nuevoEstado] && pedidoActual?.id_cliente) {
+      const { error: notiError } = await supabase
+        .from('notificaciones')
+        .insert({
+          id_cliente: pedidoActual.id_cliente,
+          id_pedido: id,
+          mensaje: mensajes[nuevoEstado]
+        });
+
+      if (notiError) console.error('Error al insertar notificación:', notiError);
+    }
+
+      toast.success(`Pedido #${id} actualizado a "${nuevoEstado}"`);
+    } catch (error: any) {
+      toast.error(error.message || 'Error al actualizar pedido');
+      obtenerPedidos(); // Rollback: recargar desde la BD
     }
   };
 
-  console.log("Loading:", loading);
+  const obtenerColorEstado = (estado: string) => {
+    switch (estado) {
+      case 'Pendiente':  return 'bg-orange-100 text-[#ff6b00]';
+      case 'Procesando': return 'bg-blue-100 text-blue-700';
+      case 'Entregado':  return 'bg-green-100 text-green-700';
+      case 'Cancelado':  return 'bg-red-100 text-red-600';
+      default:           return 'bg-slate-100 text-slate-500';
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-[#06241b]">
@@ -133,11 +189,21 @@ const actualizarEstado = async (id: number, nuevoEstado: string) => {
             </thead>
             <tbody className="divide-y divide-slate-50">
               <AnimatePresence>
+                {/* FIX #6: Estado vacío */}
+                {pedidos.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="text-center py-16 text-slate-400 font-medium text-sm">
+                      No hay pedidos registrados aún
+                    </td>
+                  </tr>
+                )}
+
                 {pedidos.map((pedido) => (
                   <motion.tr
                     key={pedido.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }} // FIX #5: faltaba exit en AnimatePresence
                     className="group hover:bg-slate-50/50 transition-colors"
                   >
                     <td className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 font-black text-[#06241b] text-sm sm:text-base">
@@ -181,9 +247,9 @@ const actualizarEstado = async (id: number, nuevoEstado: string) => {
                           <option value="Entregado">Entregado</option>
                           <option value="Cancelado">Cancelado</option>
                         </select>
-                        <LucideChevronDown 
-                          size={12} 
-                          className="absolute right-3 pointer-events-none text-slate-400" 
+                        <LucideChevronDown
+                          size={12}
+                          className="absolute right-3 pointer-events-none text-slate-400"
                           style={{ right: '12px' }}
                         />
                       </div>
