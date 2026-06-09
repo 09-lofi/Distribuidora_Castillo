@@ -4,11 +4,18 @@ import { faFacebookF, faInstagram, faWhatsapp } from '@fortawesome/free-brands-s
 import ReactGA from "react-ga4";
 
 
+//const registrarClickRedSocial = (red: string) => {
+  //ReactGA.event(`click_${red.toLowerCase()}`);
+//};
+
+
+
 const registrarClickRedSocial = (red: string) => {
-  ReactGA.event({
-    category: "Redes Sociales",
-    action: "Click",
-    label: red
+  (window as any).dataLayer = (window as any).dataLayer || [];
+
+  (window as any).dataLayer.push({
+    event: "social_click",
+    social_network: red,
   });
 };
 
