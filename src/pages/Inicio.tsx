@@ -322,8 +322,11 @@ export const Inicio = () => {
               </div>
             </div>
           </div>
-          <div className="rounded-3xl overflow-hidden shadow-2xl h-112.5 border-4 border-white bg-slate-200">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d15601.981711335187!2d-86.27156936846589!3d12.146636743494707!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sMercado%20Oriental%2C%20donde%20fue%20los%20repuestos%20burgo%202%20al%20lago%2C%20%C2%BD%20arriba!5e0!3m2!1ses-419!2sni!4v1780894927678!5m2!1ses-419!2sni" width="100%" height="100%" style={{ border: 0 }} allowFullScreen loading="lazy"></iframe>
+          <div className="rounded-3xl overflow-hidden shadow-2xl h-96 border-4 border-white bg-slate-200">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d31204.255755397422!2d-86.29152406880075!3d12.144142576780755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sMercado%20Oriental%2C%20donde%20fue%20los%20repuestos%20burgo%202%20al%20lago%2C%20%C2%BD%20arriba!5e0!3m2!1ses-419!2sni!4v1781077816109!5m2!1ses-419!2sni" 
+              width="100%"  height="100%"  style={{ border: 0 }}  allowFullScreen  loading="lazy"  referrerPolicy="no-referrer-when-downgrade">
+            </iframe>
           </div>
         </div>
       </section>

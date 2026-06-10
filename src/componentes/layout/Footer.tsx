@@ -4,9 +4,6 @@ import { faFacebookF, faInstagram, faWhatsapp } from '@fortawesome/free-brands-s
 
 const registrarClickRedSocial = (red: string) => {
   window.plausible('Click Red Social', { props: { red } });
-  window.plausible('Click Red Social', { props: { red: 'Facebook' } });
-  window.plausible('Click Red Social', { props: { red: 'Instagram' } });
-  window.plausible('Click Red Social', { props: { red: 'WhatsApp' } });
 };
 
 const Footer = () => {
