@@ -1,19 +1,17 @@
 import { LucidePhone, LucideMail } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import ReactGA from "react-ga4";
+//import ReactGA from "react-ga4";
 
 
 //const registrarClickRedSocial = (red: string) => {
   //ReactGA.event(`click_${red.toLowerCase()}`);
 //};
 
-
-
 const registrarClickRedSocial = (red: string) => {
-  (window as any).dataLayer = (window as any).dataLayer || [];
+  window.dataLayer = window.dataLayer || [];
 
-  (window as any).dataLayer.push({
+  window.dataLayer.push({
     event: "social_click",
     social_network: red,
   });
