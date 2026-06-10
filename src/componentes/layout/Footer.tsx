@@ -1,20 +1,9 @@
 import { LucidePhone, LucideMail } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faInstagram, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-//import ReactGA from "react-ga4";
-
-
-//const registrarClickRedSocial = (red: string) => {
-  //ReactGA.event(`click_${red.toLowerCase()}`);
-//};
 
 const registrarClickRedSocial = (red: string) => {
-  window.dataLayer = window.dataLayer || [];
-
-  window.dataLayer.push({
-    event: "social_click",
-    social_network: red,
-  });
+  window.plausible('Click Red Social', { props: { red } });
 };
 
 const Footer = () => {
@@ -37,13 +26,31 @@ const Footer = () => {
             "Abasteciendo con los mejores granos básicos y productos para el hogar."
           </p>
           <div className="flex gap-4 pt-2">
-            <a href="https://www.facebook.com/profile.php?id=61589945819523" target="_blank" rel="noopener noreferrer" onClick={() => registrarClickRedSocial("Facebook")} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300">
+            <a
+              href="https://www.facebook.com/profile.php?id=61589945819523"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => registrarClickRedSocial("Facebook")}
+              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
+            >
               <FontAwesomeIcon icon={faFacebookF} />
             </a>
-            <a href="https://www.instagram.com/distribuidora_castillo00/" target="_blank" rel="noopener noreferrer" onClick={() => registrarClickRedSocial("Instagram")} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300">
+            <a
+              href="https://www.instagram.com/distribuidora_castillo00/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => registrarClickRedSocial("Instagram")}
+              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
+            >
               <FontAwesomeIcon icon={faInstagram} />
             </a>
-            <a href="https://wa.me/50588335660" target="_blank" rel="noopener noreferrer" onClick={() => registrarClickRedSocial("WhatsApp")} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300">
+            <a
+              href="https://wa.me/50588335660"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => registrarClickRedSocial("WhatsApp")}
+              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
+            >
               <FontAwesomeIcon icon={faWhatsapp} />
             </a>
           </div>
@@ -89,13 +96,13 @@ const Footer = () => {
           </div>
         </div>
       </div>
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 text-center md:text-left">
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                © {new Date().getFullYear()} Distribuidora Castillo. Todos los derechos reservados.
+      <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 text-center md:text-left">
+        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+          © {new Date().getFullYear()} Distribuidora Castillo. Todos los derechos reservados.
         </p>
-        </div>
+      </div>
     </footer>
-    );
+  );
 };
 
 export default Footer;

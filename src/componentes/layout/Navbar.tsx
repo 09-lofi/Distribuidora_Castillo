@@ -24,7 +24,7 @@ const Navbar = ({
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 py-3 bg-castillo-oscuro ${isScrolled ? 'shadow-xl' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-        
+
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-3">
           <img
@@ -54,7 +54,10 @@ const Navbar = ({
         <div className="hidden lg:flex items-center gap-8 text-white font-bold text-xs uppercase tracking-widest">
           {!isLoggedIn || !userData ? (
             <button
-              onClick={onOpenAuth}
+              onClick={() => {
+                window.plausible('Auth', { props: { accion: 'abrir_login_desktop' } });
+                onOpenAuth();
+              }}
               className="bg-castillo-naranja px-6 py-2.5 rounded-full shadow-lg hover:scale-105 transition-all flex items-center gap-2"
             >
               <LucideUser size={16} />
@@ -71,6 +74,7 @@ const Navbar = ({
             {!isLoggedIn || !userData ? (
               <button
                 onClick={() => {
+                  window.plausible('Auth', { props: { accion: 'abrir_login_movil' } });
                   onOpenAuth();
                   setIsMobileMenuOpen(false);
                 }}
@@ -94,6 +98,7 @@ const Navbar = ({
                 </div>
                 <button
                   onClick={() => {
+                    window.plausible('Auth', { props: { accion: 'cerrar_sesion_admin_movil' } });
                     onLogout();
                     setIsMobileMenuOpen(false);
                   }}
@@ -110,6 +115,7 @@ const Navbar = ({
                 </div>
                 <button
                   onClick={() => {
+                    window.plausible('Auth', { props: { accion: 'cerrar_sesion_cliente_movil' } });
                     onLogout();
                     setIsMobileMenuOpen(false);
                   }}

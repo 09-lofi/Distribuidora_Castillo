@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
-import { LucideClock,LucideMapPin, LucideUser, LucideShoppingCart, LucideStore, LucideChevronRight} from 'lucide-react';
+import { LucideClock, LucideMapPin, LucideUser, LucideShoppingCart, LucideStore, LucideChevronRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { supabase } from "../supabaseClient";
 import { toast } from "react-hot-toast";
 import { useState } from 'react';
+import ReactGA from 'react-ga4';
 
 export const Inicio = () => {
   const [showModal, setShowModal] = useState(false);
@@ -15,7 +16,6 @@ export const Inicio = () => {
   const [pedidoEncontrado, setPedidoEncontrado] = useState<any>(null);
   const [participando, setParticipando] = useState(false);
 
-  // ARRAY CON PRODUCTOS REALES E IMÁGENES DINÁMICAS
   const destacados = [
     { nombre: "Arroz Faisan 80/20", img: "/ArrozFaisan.png" },
     { nombre: "Detergente", img: "/detergente.png" },
@@ -24,9 +24,17 @@ export const Inicio = () => {
     { nombre: "Café Presto 40 unidades", img: "/presto.png" },
   ];
 
-  const handleOpenModal = () => setShowModal(true);
+  const handleOpenModal = () => {
+    // Trackea cuando abren el modal de "Ver Catálogo" desde el hero
+    ReactGA.event({ category: 'CTA', action: 'clic_abrir_modal_catalogo' });
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => setShowModal(false);
+
   const handleRedirect = () => {
+    // Trackea cuando confirman ir al catálogo desde el modal
+    ReactGA.event({ category: 'CTA', action: 'clic_confirmar_ir_catalogo' });
     setShowModal(false);
     window.location.href = '/catalogo';
   };
@@ -35,6 +43,9 @@ export const Inicio = () => {
     if (!numeroFactura) {
       return toast.error("Ingresa un número de factura");
     }
+
+    // Trackea búsqueda de factura para la rifa
+    ReactGA.event({ category: 'Rifa', action: 'clic_buscar_factura' });
 
     setPedidoEncontrado(null);
     setParticipando(false);
@@ -47,41 +58,51 @@ export const Inicio = () => {
 
     if (error || !data) {
       toast.error("Factura no encontrada");
+      // Trackea cuando no se encuentra la factura
+      ReactGA.event({ category: 'Rifa', action: 'factura_no_encontrada' });
       return;
     }
 
+    // Trackea cuando sí se encuentra la factura
+    ReactGA.event({ category: 'Rifa', action: 'factura_encontrada' });
     setPedidoEncontrado(data);
   };
 
   const participarRifa = async () => {
     if (!pedidoEncontrado) return;
 
-    // Validación de seguridad 
     if (Number(pedidoEncontrado.total_pedido) < 500) {
+      // Trackea cuando la factura no cumple el monto mínimo
+      ReactGA.event({ category: 'Rifa', action: 'factura_monto_insuficiente' });
       return toast.error("La compra debe ser mayor o igual a C$500");
     }
+
+    // Trackea intento de confirmar participación
+    ReactGA.event({ category: 'Rifa', action: 'clic_confirmar_participacion' });
 
     const { error } = await supabase
       .from("participantes_rifa")
       .insert({ pedido_id: pedidoEncontrado.id });
 
     if (error) {
-      // Si el error es porque ya existe
       toast.error("Esta factura ya fue registrada anteriormente");
+      ReactGA.event({ category: 'Rifa', action: 'participacion_duplicada' });
       return;
     }
 
+    // Trackea participación exitosa
+    ReactGA.event({ category: 'Rifa', action: 'participacion_exitosa' });
     setParticipando(true);
     toast.success("¡Registro exitoso!");
   };
 
   return (
     <div className="flex flex-col w-full bg-slate-50 font-montserrat overflow-x-hidden">
-      
-      {/* MODAL */}
+
+      {/* MODAL VER CATÁLOGO */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-white rounded-3xl p-10 max-w-lg mx-4 shadow-2xl border-b-8 border-castillo-naranja text-center"
@@ -96,13 +117,13 @@ export const Inicio = () => {
               Si deseas realizar una compra, debes registrarte o iniciar sesión.
             </p>
             <div className="flex gap-4 justify-center">
-              <button 
+              <button
                 onClick={handleCloseModal}
                 className="px-6 py-3 rounded-full font-black uppercase tracking-wider text-sm border-2 border-slate-300 text-slate-600 hover:bg-slate-100 transition-all"
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 onClick={handleRedirect}
                 className="px-6 py-3 rounded-full font-black uppercase tracking-wider text-sm bg-castillo-naranja text-white hover:bg-orange-700 transition-all shadow-lg shadow-castillo-naranja/20"
               >
@@ -113,10 +134,11 @@ export const Inicio = () => {
         </div>
       )}
 
+      {/* MODAL RIFA */}
       {showRifaModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white w-full max-w-2xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative"
           >
@@ -132,12 +154,14 @@ export const Inicio = () => {
                 onChange={(e) => setNumeroFactura(e.target.value)}
                 className="w-full p-5 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-castillo-naranja outline-none font-bold text-lg"
               />
-              <button onClick={buscarFactura} className="w-full bg-castillo-oscuro text-white py-4 rounded-2xl font-black uppercase hover:bg-black transition-all">
+              <button
+                onClick={buscarFactura}
+                className="w-full bg-castillo-oscuro text-white py-4 rounded-2xl font-black uppercase hover:bg-black transition-all"
+              >
                 Buscar mi factura
               </button>
             </div>
 
-            {/* Resultado de la búsqueda */}
             {pedidoEncontrado && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 p-6 bg-orange-50 border-2 border-orange-100 rounded-3xl">
                 <div className="flex justify-between items-center mb-4">
@@ -149,7 +173,11 @@ export const Inicio = () => {
                     Lamentamos informarte que tu factura no cumple con el monto mínimo de C$500 para participar.
                   </div>
                 ) : (
-                  <button onClick={participarRifa} disabled={participando} className="w-full bg-green-600 text-white py-4 rounded-2xl font-black uppercase hover:bg-green-700 disabled:bg-slate-300 transition-all">
+                  <button
+                    onClick={participarRifa}
+                    disabled={participando}
+                    className="w-full bg-green-600 text-white py-4 rounded-2xl font-black uppercase hover:bg-green-700 disabled:bg-slate-300 transition-all"
+                  >
                     {participando ? "Procesando..." : "Confirmar Participación"}
                   </button>
                 )}
@@ -171,7 +199,7 @@ export const Inicio = () => {
           <img src="/granos.jpg" alt="Fondo" className="w-full h-full object-cover scale-110" />
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
         </div>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -179,12 +207,12 @@ export const Inicio = () => {
           className="relative z-10 text-center px-6 max-w-5xl mx-auto"
         >
           <h1 className="text-5xl md:text-8xl font-black text-white mb-6 uppercase tracking-tighter leading-none">
-            Distribuidora<br/><span className="text-castillo-limon">Castillo</span>
+            Distribuidora<br /><span className="text-castillo-limon">Castillo</span>
           </h1>
           <p className="text-lg md:text-2xl text-slate-100 max-w-2xl mx-auto mb-10 font-medium leading-relaxed italic border-l-4 border-castillo-naranja pl-4">
             "Cuidando tu mesa, protegiendo tu bolsillo"
           </p>
-          <motion.button 
+          <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
@@ -193,28 +221,32 @@ export const Inicio = () => {
             onClick={handleOpenModal}
             className="bg-castillo-naranja text-white px-10 py-4 rounded-full font-black uppercase tracking-widest shadow-2xl shadow-castillo-naranja/20 transition-all flex items-center gap-3 mx-auto group"
           >
-            Ver Catálogo 
+            Ver Catálogo
             <LucideChevronRight className="group-hover:translate-x-1 transition-transform" size={20} />
           </motion.button>
         </motion.div>
       </section>
 
-      {/*BANNER PROMOCIONAL MEJORADO*/}
+      {/* BANNER PROMOCIONAL */}
       <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto bg-white rounded-4xl p-8 md:p-16 shadow-xl border border-orange-100 relative overflow-hidden">
-          {/* Decoración de fondo */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50 -mr-20 -mt-20"></div>
-          
           <div className="grid md:grid-cols-2 gap-12 items-center relative z-10">
-            <img src="/marketing3.jpeg" alt="Día del Padre" className="rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500"/>
+            <img src="/marketing3.jpeg" alt="Día del Padre" className="rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500" />
             <div>
               <span className="text-castillo-naranja font-black uppercase tracking-widest text-sm">Promoción Especial</span>
               <h2 className="text-4xl md:text-5xl font-black text-castillo-oscuro uppercase mt-2 mb-6">Rifa Día del Padre</h2>
               <p className="text-slate-600 mb-8 text-lg">
                 ¡Celebramos a papá! Todas tus compras mayores o iguales a <strong>C$500</strong> te hacen participar automáticamente en la rifa de una canasta básica completa.
               </p>
-              <button onClick={() => setShowRifaModal(true)}
-                className="bg-castillo-oscuro text-white px-8 py-4 rounded-full font-black uppercase tracking-wider hover:bg-black transition-all">
+              {/* Trackea clic en botón principal de la rifa */}
+              <button
+                onClick={() => {
+                  ReactGA.event({ category: 'Rifa', action: 'clic_abrir_modal_rifa' });
+                  setShowRifaModal(true);
+                }}
+                className="bg-castillo-oscuro text-white px-8 py-4 rounded-full font-black uppercase tracking-wider hover:bg-black transition-all"
+              >
                 ¡Participa ya!
               </button>
             </div>
@@ -222,6 +254,7 @@ export const Inicio = () => {
         </div>
       </section>
 
+      {/* IDENTIDAD */}
       <section className="py-24 bg-white px-6">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl font-black text-center uppercase mb-16">Nuestra <span className="text-castillo-naranja">Identidad</span></h2>
@@ -246,7 +279,7 @@ export const Inicio = () => {
         </div>
       </section>
 
-      {/* 4. CÓMO COMPRAR */}
+      {/* CÓMO COMPRAR */}
       <section className="py-24 px-6 bg-white border-y border-slate-100">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl font-black text-castillo-oscuro uppercase mb-16">¿Cómo <span className="text-castillo-naranja">Comprar?</span></h2>
@@ -270,7 +303,7 @@ export const Inicio = () => {
         </div>
       </section>
 
-      {/* 5. CARRUSEL DE PRODUCTOS (CORREGIDO Y COMPLETO) */}
+      {/* CARRUSEL DE PRODUCTOS */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-black text-castillo-oscuro uppercase mb-16">Productos <span className="text-castillo-naranja">Más Cotizados</span></h2>
@@ -285,7 +318,15 @@ export const Inicio = () => {
           >
             {destacados.map((item, idx) => (
               <SwiperSlide key={idx}>
-                <div className="bg-white rounded-3xl overflow-hidden group border border-slate-100 shadow-sm h-full">
+                {/* Trackea clic en cards de productos destacados */}
+                <div
+                  className="bg-white rounded-3xl overflow-hidden group border border-slate-100 shadow-sm h-full cursor-pointer"
+                  onClick={() => ReactGA.event({
+                    category: 'Catalogo',
+                    action: 'clic_producto_destacado',
+                    label: item.nombre
+                  })}
+                >
                   <div className="h-64 overflow-hidden relative">
                     <img src={item.img} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={item.nombre} />
                     <div className="absolute top-4 right-4 bg-castillo-naranja text-white text-[10px] font-black px-3 py-1 rounded-full">DESTACADO</div>
@@ -300,11 +341,11 @@ export const Inicio = () => {
         </div>
       </section>
 
-      {/* 6. UBICACIÓN Y MAPA */}
+      {/* UBICACIÓN Y MAPA */}
       <section className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-black text-castillo-oscuro uppercase mb-6 leading-none">Nuestra <br/><span className="text-castillo-naranja text-5xl">Ubicación</span></h2>
+            <h2 className="text-4xl font-black text-castillo-oscuro uppercase mb-6 leading-none">Nuestra <br /><span className="text-castillo-naranja text-5xl">Ubicación</span></h2>
             <div className="space-y-6">
               <div className="bg-slate-50 p-6 rounded-2xl border-l-8 border-castillo-oscuro flex items-center gap-4">
                 <LucideClock className="text-castillo-naranja" size={24} />
