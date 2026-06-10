@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LucideUser, Menu, X } from 'lucide-react';
 import { PerfilDropdown } from '../auth/PerfilDropdown';
+import { trackEvent } from '../../utils/analytics';
 
 interface NavbarProps {
   isScrolled: boolean;
@@ -55,7 +56,7 @@ const Navbar = ({
           {!isLoggedIn || !userData ? (
             <button
               onClick={() => {
-                window.plausible('Auth', { props: { accion: 'abrir_login_desktop' } });
+                trackEvent('Auth', { accion: 'abrir_login_desktop' });
                 onOpenAuth();
               }}
               className="bg-castillo-naranja px-6 py-2.5 rounded-full shadow-lg hover:scale-105 transition-all flex items-center gap-2"

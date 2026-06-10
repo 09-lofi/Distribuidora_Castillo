@@ -4,6 +4,9 @@ import { faFacebookF, faInstagram, faWhatsapp } from '@fortawesome/free-brands-s
 
 const registrarClickRedSocial = (red: string) => {
   window.plausible('Click Red Social', { props: { red } });
+  window.plausible('Click Red Social', { props: { red: 'Facebook' } });
+  window.plausible('Click Red Social', { props: { red: 'Instagram' } });
+  window.plausible('Click Red Social', { props: { red: 'WhatsApp' } });
 };
 
 const Footer = () => {
@@ -31,27 +34,24 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => registrarClickRedSocial("Facebook")}
-              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
-            >
-              <FontAwesomeIcon icon={faFacebookF} className="text-sm"/>
+              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300">
+              <FontAwesomeIcon icon={faFacebookF} className="h-4 w-4"/>
             </a>
             <a
               href="https://www.instagram.com/distribuidora_castillo00/"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => registrarClickRedSocial("Instagram")}
-              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
-            >
-              <FontAwesomeIcon icon={faInstagram} className="text-sm"/>
+              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300">
+              <FontAwesomeIcon icon={faInstagram} className="h-5 w-5"/>
             </a>
             <a
               href="https://wa.me/50588335660"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => registrarClickRedSocial("WhatsApp")}
-              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
-            >
-              <FontAwesomeIcon icon={faWhatsapp} className="text-sm"/>
+              className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300">
+              <FontAwesomeIcon icon={faWhatsapp} className="h-5 w-5"/>
             </a>
           </div>
         </div>
