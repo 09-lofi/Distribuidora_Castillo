@@ -33,7 +33,7 @@ const Footer = () => {
               onClick={() => registrarClickRedSocial("Facebook")}
               className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
             >
-              <FontAwesomeIcon icon={faFacebookF} />
+              <FontAwesomeIcon icon={faFacebookF} className="text-sm"/>
             </a>
             <a
               href="https://www.instagram.com/distribuidora_castillo00/"
@@ -42,7 +42,7 @@ const Footer = () => {
               onClick={() => registrarClickRedSocial("Instagram")}
               className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
             >
-              <FontAwesomeIcon icon={faInstagram} />
+              <FontAwesomeIcon icon={faInstagram} className="text-sm"/>
             </a>
             <a
               href="https://wa.me/50588335660"
@@ -51,7 +51,7 @@ const Footer = () => {
               onClick={() => registrarClickRedSocial("WhatsApp")}
               className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center hover:bg-castillo-naranja hover:text-white transition-all text-slate-300"
             >
-              <FontAwesomeIcon icon={faWhatsapp} />
+              <FontAwesomeIcon icon={faWhatsapp} className="text-sm"/>
             </a>
           </div>
         </div>
