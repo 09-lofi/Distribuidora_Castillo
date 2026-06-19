@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supabaseClient';
+import { productImges } from '../../img/imagenProducto'
 import { 
   LucideCalendar, LucidePackage, 
   LucideLoader2, LucideHeart, LucideTrash2 
@@ -153,11 +154,46 @@ const HistorialCompras = ({ user }: HistorialProps) => {
             favoritos.map((fav) => (
               <div key={fav.id_producto} className="flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-transparent hover:border-castillo-naranja/20 transition-all group">
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-2 shadow-sm">
-                  <img 
-                    src={`/productos/${fav.id_producto}.png`} 
-                    onError={(e) => { e.currentTarget.src = '/placeholder.png' }} 
-                    alt="Producto" 
-                    className="w-full h-full object-contain" 
+                  <img
+                    src={(() => {
+                      const mapNombreToKey: Record<string, string> = {
+                        "Arroz Faisan": "ArrozFaisan",
+                        "Aceite": "aceite",
+                        "Avena en hojuela": "avena",
+                        "Spagueti": "espagueti",
+                        "Salsa inglesa": "salsa",
+                        "Jabon de lavar": "jabon",
+                        "Detergente": "detergente",
+                        "Aromatizante de ropa": "aromatizante",
+                        "Escoba": "escoba",
+                        "Papel aluminio": "aluminio",
+                        "Pasta dental": "dentrifico",
+                        "Jabon de baño": "palmolive",
+                        "Desodorante en barra": "rexona",
+                        "Toalla nocturna": "kotex",
+                        "Pañales": "panales",
+                        "Sopa": "sopa",
+                        "Leche": "leche",
+                        "Cremora": "cremora",
+                        "Maiz dulce": "maiz",
+                        "Atun Agua": "atun",
+                        "Jalapeños Max": "jalapeno",
+                        "Galletas": "galletas",
+                        "Caramelo": "caramelo",
+                        "Cafe": "cafe",
+                        "Refresco en polvo de naranja": "fresco",
+                        "Vasos N6": "vasos",
+                        "Cuchara": "cuchara",
+                        "Papel higienico": "papel",
+                        "Papel para cosina": "toalla",
+                        "Servilletas": "servilleta",
+                      };
+                      const nombre = fav.productos?.nombre_producto || '';
+                      const clave = mapNombreToKey[nombre] || '';
+                      return clave ? productImges[clave] || '/placeholder.png' : '/placeholder.png';
+                    })()}
+                    className="w-full h-full object-contain"
+                    alt={fav.productos?.nombre_producto || 'Producto'}
                   />
                 </div>
                 <div className="flex-1">

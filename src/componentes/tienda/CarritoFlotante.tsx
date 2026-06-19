@@ -10,6 +10,7 @@ import {
     LucideLock
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { productImges } from '../../img/imagenProducto';
 
 interface Producto {
     id: number;
@@ -143,9 +144,45 @@ export const CarritoFlotante: React.FC<CarritoProps> = ({
                         >
                             {/* IMAGEN */}
                             <img
-                            src={item.img || '/placeholder.png'}
-                            className="w-16 h-16 object-cover rounded-xl shadow-sm bg-slate-100"
-                            alt={item.nombre_producto}
+                                src={(() => {
+                                    const mapNombreToKey: Record<string, string> = {
+                                        "Arroz Faisan": "ArrozFaisan",
+                                        "Aceite": "aceite",
+                                        "Avena en hojuela": "avena",
+                                        "Spagueti": "espagueti",
+                                        "Salsa inglesa": "salsa",
+                                        "Jabon de lavar": "jabon",
+                                        "Detergente": "detergente",
+                                        "Aromatizante de ropa": "aromatizante",
+                                        "Escoba": "escoba",
+                                        "Papel aluminio": "aluminio",
+                                        "Pasta dental": "dentrifico",
+                                        "Jabon de baño": "palmolive",
+                                        "Desodorante en barra": "rexona",
+                                        "Toalla nocturna": "kotex",
+                                        "Pañales": "panales",
+                                        "Sopa": "sopa",
+                                        "Leche": "leche",
+                                        "Cremora": "cremora",
+                                        "Maiz dulce": "maiz",
+                                        "Atun Agua": "atun",
+                                        "Jalapeños Max": "jalapeno",
+                                        "Galletas": "galletas",
+                                        "Caramelo": "caramelo",
+                                        "Cafe": "cafe",
+                                        "Refresco en polvo de naranja": "fresco",
+                                        "Vasos N6": "vasos",
+                                        "Cuchara": "cuchara",
+                                        "Papel higienico": "papel",
+                                        "Papel para cosina": "toalla",
+                                        "Servilletas": "servilleta",
+                                    };
+                                    const nombre = item.nombre_producto || '';
+                                    const clave = mapNombreToKey[nombre] || '';
+                                    return clave ? productImges[clave] || '/placeholder.png' : '/placeholder.png';
+                                })()}
+                                className="w-16 h-16 object-cover rounded-xl shadow-sm bg-slate-100"
+                                alt={item.nombre_producto}
                             />
                             {/* INFO */}
                             <div className="flex-1">
